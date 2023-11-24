@@ -47,14 +47,14 @@ class _LoginState extends State<Login> {
                   keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
                     hintText: 'Ingresa tu correo',
-                    prefixIcon: Icon(Icons.mail, color: Colors.white),
+                    prefixIcon: const Icon(Icons.mail, color: Colors.white),
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(5),
                         borderSide: const BorderSide(
                             width: 1, style: BorderStyle.none)),
                     filled: true,
                     errorText:
-                    _validateMail ? 'Debe de escribir su correo' : null,
+                        _validateMail ? 'Debe de escribir su correo' : null,
                     fillColor: Colors.white70.withOpacity(0.3),
                     contentPadding: const EdgeInsets.all(10),
                   ),
@@ -66,27 +66,25 @@ class _LoginState extends State<Login> {
                     });
                   },
                 ),
-
                 const SizedBox(
                   height: 15,
                 ),
                 const Label(
                   texto: "contraseña:",
-
                 ),
                 TextFormField(
                   controller: pass,
                   obscureText: true,
                   decoration: InputDecoration(
                     hintText: 'Ingresa tu contraseña',
-                    prefixIcon: Icon(Icons.password, color: Colors.white),
+                    prefixIcon: const Icon(Icons.password, color: Colors.white),
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(5),
                         borderSide: const BorderSide(
                             width: 1, style: BorderStyle.none)),
                     filled: true,
                     errorText:
-                    _validatePass ? 'Debe de escribir su password' : null,
+                        _validatePass ? 'Debe de escribir su password' : null,
                     fillColor: Colors.white70.withOpacity(0.3),
                     contentPadding: const EdgeInsets.all(10),
                   ),
@@ -107,8 +105,7 @@ class _LoginState extends State<Login> {
                         _validatePass = pass.text.isEmpty ? true : false;
                         _validateMail = email.text.isEmpty ? true : false;
 
-                        if (!_validateMail &&
-                            !_validatePass) {
+                        if (!_validateMail && !_validatePass) {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -120,18 +117,18 @@ class _LoginState extends State<Login> {
                         backgroundColor: cons.AzulPrimario,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(5)),
-                        fixedSize: Size(size.width * 0.30, 45)),
+                        fixedSize: Size(size.width * 0.45, 45)),
                     child: const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
                           Icons.login,
-                          color: Colors.blueGrey ,
+                          color: Colors.blueGrey,
                         ),
                         Text(
                           '  Ingresar',
                           style: TextStyle(
-                              color: Colors.white ,
+                              color: Colors.white,
                               fontSize: 18,
                               fontWeight: FontWeight.bold),
                         )
@@ -160,7 +157,9 @@ class Label extends StatelessWidget {
           child: Text(
             texto,
             style: const TextStyle(
-                color: Colors.greenAccent , fontSize: 20, fontWeight: FontWeight.w500),
+                color: Colors.greenAccent,
+                fontSize: 20,
+                fontWeight: FontWeight.w500),
           ),
         )
       ],
