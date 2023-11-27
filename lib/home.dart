@@ -17,7 +17,20 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   List users = [];
-  final List<Marker> _markers = <Marker>[];
+  final List<Marker> _markers = <Marker>[
+    const Marker(
+      markerId: MarkerId('Mark1'),
+      position: LatLng(22.157055388491084, -101.00449934670127),
+    ),
+    const Marker(
+      markerId: MarkerId('Mark2'),
+      position: LatLng(22.13662436062401, -100.99522963217403),
+    ),
+    const Marker(
+      markerId: MarkerId('Mark3'),
+      position: LatLng(22.15836934906357, -100.97949062105342),
+    ),
+  ];
   late GoogleMapController mapController;
   final LatLng _center = const LatLng(22.144596, -101.009064);
   TextEditingController emailController = TextEditingController(text: "");
@@ -26,6 +39,8 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     Future<List> users = getData();
+    print('--------------');
+    print(users);
     super.initState();
   }
 
@@ -37,12 +52,14 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
-        //backgroundColor: Colors.black,
-        appBar: AppBar(),
+        backgroundColor: Colors.black,
+        appBar: AppBar(backgroundColor: Colors.black),
         body: Stack(children: [
           GoogleMap(
-              onMapCreated: _onMapCreated,
-              initialCameraPosition: CameraPosition(target: _center, zoom: 17)),
+            onMapCreated: _onMapCreated,
+            initialCameraPosition: CameraPosition(target: _center, zoom: 17),
+            markers: Set<Marker>.from(_markers),
+          ),
           Column(
             children: [
               ElevatedButton(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:instant_quote/home.dart';
 import 'package:instant_quote/utils/constantes.dart' as cons;
+import 'package:instant_quote/utils/services/firebase_service.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -100,18 +101,38 @@ class _LoginState extends State<Login> {
                   height: 25,
                 ),
                 ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        _validatePass = pass.text.isEmpty ? true : false;
-                        _validateMail = email.text.isEmpty ? true : false;
+                    onPressed: () async {
+                      _validatePass = pass.text.isEmpty ? true : false;
+                      _validateMail = email.text.isEmpty ? true : false;
 
-                        if (!_validateMail && !_validatePass) {
+                      if (!_validateMail && !_validatePass) {
+                        if (await autenticarUsuario(email.text, pass.text) ==
+                            true) {
+                          // ignore: use_build_context_synchronously
                           Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => const Home()));
+                        } else {
+                          // ignore: use_build_context_synchronously
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text('Credenciales incorrectas'),
+                                  content: const Text(
+                                      'Hubo un error con las credenciales'),
+                                  actions: <Widget>[
+                                    TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: const Text('Aceptar'))
+                                  ],
+                                );
+                              });
                         }
-                      });
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                         backgroundColor: cons.AzulPrimario,
