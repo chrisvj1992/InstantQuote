@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:instant_quote/utils/constantes.dart';
 
 FirebaseFirestore db = FirebaseFirestore.instance;
 
@@ -16,6 +17,33 @@ Future<List> getData() async {
 Future<void> addUser(String email, String pass) async {
   await db.collection("users").add({"email": email, "pass": pass});
 }
+
+Future<bool> autenticarUsuario(String email, String pass) async {
+  try {
+    QuerySnapshot querySnapshot =
+        await db.collection('users').where('email', isEqualTo: email).get();
+    if (querySnapshot.docs.isNotEmpty) {
+      Object? userData = querySnapshot.docs[0].data();
+      var datos = userData
+          .toString()
+          .replaceAll('{', '')
+          .replaceAll('}', '')
+          .split(', ');
+
+      var oriEmail = datos[1].split(': ');
+      var oriPass = datos[0].split(': ');
+      if (oriEmail[1] == email && oriPass[1] == pass) {
+        isLogged = true;
+        return true;
+      }
+    }
+    isLogged = false;
+    return false;
+  } catch (e) {
+    return false;
+  }
+}
+
 
 // Future<void> editPeople(String name, String newName) async {
 //   final CollectionReference collectionReferencePeople = db.collection('name');
