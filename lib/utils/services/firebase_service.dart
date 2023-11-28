@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:instant_quote/utils/constantes.dart';
 
 FirebaseFirestore db = FirebaseFirestore.instance;
@@ -7,11 +8,24 @@ Future<List> getData() async {
   List users = [];
   CollectionReference collectionReferencePeople = db.collection('users');
   QuerySnapshot queryPeople = await collectionReferencePeople.get();
-  // ignore: avoid_function_literals_in_foreach_calls
-  queryPeople.docs.forEach((documento) {
+  for (var documento in queryPeople.docs) {
     users.add(documento.data());
-  });
+  }
   return users;
+}
+
+Future<List<Marker>> getCoords() async {
+  List<Marker> coords = [];
+  CollectionReference collectionReference = db.collection('coords');
+  QuerySnapshot queryCoords = await collectionReference.get();
+  for (var documento in queryCoords.docs) {
+    coords.add(Marker(
+      markerId: MarkerId(documento['quote']),
+      position:
+          LatLng(documento['coords'].latitude, documento['coords'].longitude),
+    ));
+  }
+  return coords;
 }
 
 Future<void> addUser(String email, String pass) async {
