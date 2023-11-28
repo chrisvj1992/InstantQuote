@@ -23,6 +23,12 @@ Future<List<Marker>> getCoords() async {
       markerId: MarkerId(documento['quote']),
       position:
           LatLng(documento['coords'].latitude, documento['coords'].longitude),
+      // onTap: setState(() {
+      //                 Navigator.push(
+      //                     context,
+      //                     MaterialPageRoute(
+      //                         builder: (context) => const quoteView()));
+      //               });
     ));
   }
   return coords;
