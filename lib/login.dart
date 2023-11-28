@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:instant_quote/home.dart';
 import 'package:instant_quote/utils/constantes.dart' as cons;
+import 'package:instant_quote/utils/services/firebase_service.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -47,14 +48,14 @@ class _LoginState extends State<Login> {
                   keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
                     hintText: 'Ingresa tu correo',
-                    prefixIcon: Icon(Icons.mail, color: Colors.white),
+                    prefixIcon: const Icon(Icons.mail, color: Colors.white),
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(5),
                         borderSide: const BorderSide(
                             width: 1, style: BorderStyle.none)),
                     filled: true,
                     errorText:
-                    _validateMail ? 'Debe de escribir su correo' : null,
+                        _validateMail ? 'Debe de escribir su correo' : null,
                     fillColor: Colors.white70.withOpacity(0.3),
                     contentPadding: const EdgeInsets.all(10),
                   ),
@@ -66,27 +67,25 @@ class _LoginState extends State<Login> {
                     });
                   },
                 ),
-
                 const SizedBox(
                   height: 15,
                 ),
                 const Label(
                   texto: "contraseña:",
-
                 ),
                 TextFormField(
                   controller: pass,
                   obscureText: true,
                   decoration: InputDecoration(
                     hintText: 'Ingresa tu contraseña',
-                    prefixIcon: Icon(Icons.password, color: Colors.white),
+                    prefixIcon: const Icon(Icons.password, color: Colors.white),
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(5),
                         borderSide: const BorderSide(
                             width: 1, style: BorderStyle.none)),
                     filled: true,
                     errorText:
-                    _validatePass ? 'Debe de escribir su password' : null,
+                        _validatePass ? 'Debe de escribir su password' : null,
                     fillColor: Colors.white70.withOpacity(0.3),
                     contentPadding: const EdgeInsets.all(10),
                   ),
@@ -102,36 +101,55 @@ class _LoginState extends State<Login> {
                   height: 25,
                 ),
                 ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        _validatePass = pass.text.isEmpty ? true : false;
-                        _validateMail = email.text.isEmpty ? true : false;
+                    onPressed: () async {
+                      _validatePass = pass.text.isEmpty ? true : false;
+                      _validateMail = email.text.isEmpty ? true : false;
 
-                        if (!_validateMail &&
-                            !_validatePass) {
+                      if (!_validateMail && !_validatePass) {
+                        if (await autenticarUsuario(email.text, pass.text) ==
+                            true) {
+                          // ignore: use_build_context_synchronously
                           Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => const Home()));
+                        } else {
+                          // ignore: use_build_context_synchronously
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text('Credenciales incorrectas'),
+                                  content: const Text(
+                                      'Hubo un error con las credenciales'),
+                                  actions: <Widget>[
+                                    TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: const Text('Aceptar'))
+                                  ],
+                                );
+                              });
                         }
-                      });
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                         backgroundColor: cons.AzulPrimario,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(5)),
-                        fixedSize: Size(size.width * 0.30, 45)),
+                        fixedSize: Size(size.width * 0.45, 45)),
                     child: const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
                           Icons.login,
-                          color: Colors.blueGrey ,
+                          color: Colors.blueGrey,
                         ),
                         Text(
                           '  Ingresar',
                           style: TextStyle(
-                              color: Colors.white ,
+                              color: Colors.white,
                               fontSize: 18,
                               fontWeight: FontWeight.bold),
                         )
@@ -160,7 +178,9 @@ class Label extends StatelessWidget {
           child: Text(
             texto,
             style: const TextStyle(
-                color: Colors.greenAccent , fontSize: 20, fontWeight: FontWeight.w500),
+                color: Colors.greenAccent,
+                fontSize: 20,
+                fontWeight: FontWeight.w500),
           ),
         )
       ],
