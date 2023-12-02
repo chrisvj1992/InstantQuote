@@ -1,7 +1,13 @@
 // ignore_for_file: camel_case_types, file_names
 
+import 'dart:io';
+
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
+import 'package:instant_quote/home.dart';
 import 'package:instant_quote/utils/constantes.dart' as cons;
+import 'package:file_picker/file_picker.dart';
 
 class newQuote extends StatefulWidget {
   const newQuote({super.key});
@@ -11,6 +17,32 @@ class newQuote extends StatefulWidget {
 }
 
 class _newQuoteState extends State<newQuote> {
+  PlatformFile? pickedFile;
+  UploadTask? uploadTask;
+
+  Future selectFile() async {
+    final result = await FilePicker.platform.pickFiles();
+    if(result == null) return;
+
+    setState(() {
+      pickedFile = result.files.first;
+    });
+  }
+
+  Future uploadFile() async {
+    final path = 'files/${pickedFile!.name}';
+    final file = File(pickedFile!.path!);
+
+    final ref = FirebaseStorage.instance.ref().child(path);
+    uploadTask = ref.putFile(file);
+
+    final snapshot = await uploadTask!.whenComplete(() {});
+
+    final urlDownload = await snapshot.ref.getDownloadURL();
+    print('Link Descarga: $urlDownload');
+  }
+
+
   final quote = TextEditingController();
   final time = TextEditingController();
   final latitude = TextEditingController();
@@ -71,6 +103,7 @@ class _newQuoteState extends State<newQuote> {
                           onTap: () {
                             setState(() {
                               mostrarLogoOscuro = !mostrarLogoOscuro;
+                              selectFile();
                             });
                           },
                           child: Expanded(
@@ -80,12 +113,14 @@ class _newQuoteState extends State<newQuote> {
                               decoration: const BoxDecoration(
                                   color: Colors.white
                               ),
-                              child: Image.asset(
-                                mostrarLogoOscuro
-                                    ? 'assets/LogoOscuro.jpg'
-                                    : 'assets/LogoClaro.jpg',
-                                fit: BoxFit.cover,
-                              ),
+                              child: pickedFile != null
+                                  ? Image.file(
+                                      File(pickedFile!.path!),
+                                      fit: BoxFit.cover,
+                                    )
+                                  : Image.asset(
+                                       'assets/LogoOscuro.jpg',
+                                     fit: BoxFit.cover),
                             ),
                           ),
                         )
@@ -165,7 +200,12 @@ class _newQuoteState extends State<newQuote> {
                             onPressed: () => Navigator.pop(context, 'Cancelar'),
                             child: const Text('Cancelar')),
                         TextButton(
-                            onPressed: () => Navigator.pop(context, 'Ok'),
+                            onPressed: () => {
+                              uploadFile(),
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => const Home()),
+                              )},
                             child: const Text('Ok'))
                       ],
                     )),
