@@ -4,6 +4,7 @@ import 'dart:core';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:instant_quote/newQuote.dart';
 import 'package:instant_quote/quoteView.dart';
 import 'package:instant_quote/utils/constantes.dart';
 import 'package:instant_quote/utils/services/firebase_service.dart';
@@ -40,63 +41,85 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return Scaffold(
-        backgroundColor: Colors.black,
-        appBar: AppBar(backgroundColor: Colors.black),
-        body: Stack(children: [
-          GoogleMap(
-            onMapCreated: _onMapCreated,
-            initialCameraPosition: CameraPosition(target: _center, zoom: 17),
-            markers: markersGlobal,
+        backgroundColor: Color.fromRGBO(33, 43, 49, 1.0),
+        appBar: AppBar(
+          backgroundColor: Colors.greenAccent,
+          toolbarHeight: 80,
+          title: const Text('Inicio'),
+          titleTextStyle: TextStyle(
+              color: Colors.black45,
+              fontSize: 24,
+              fontWeight: FontWeight.bold
           ),
-          Column(
-            children: [
-              const SizedBox(height: 20),
-              Align(
-                alignment: Alignment.bottomRight,
-                child: FloatingActionButton(
-                  onPressed: () {
-                    setState(() {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const quoteView()));
-                    });
-                  },
-                  backgroundColor: Colors.orange,
-                  child: const Icon(Icons.add_a_photo_outlined),
+          iconTheme: IconThemeData(color: Colors.black45, size: 32.0),
+        ),
+        body: Stack(children: [
+
+          Container(
+            padding: EdgeInsets.only(bottom: size.height * 0.1),
+            width: size.width,
+            height: size.height ,
+            child: Stack(
+              children: [
+                GoogleMap(
+                  onMapCreated: _onMapCreated,
+                  initialCameraPosition: CameraPosition(target: _center, zoom: 17),
+                  markers: markersGlobal,
+
                 ),
-              ),
-              const SizedBox(height: 20),
-              Align(
-                alignment: Alignment.bottomRight,
-                child: FloatingActionButton(
-                  onPressed: () {
-                    setState(() {
-                      _myPosition();
-                    });
-                  },
-                  backgroundColor: Colors.orange,
-                  child: const Icon(Icons.location_searching_rounded),
-                ),
-              ),
-              const SizedBox(height: 20),
-              Align(
-                alignment: Alignment.bottomRight,
-                child: FloatingActionButton(
-                  onPressed: () {
-                    setState(() {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const quoteView()));
-                    });
-                  },
-                  backgroundColor: Colors.orange,
-                  child: const Icon(Icons.supervised_user_circle_sharp),
-                ),
-              ),
-            ],
+                Column(
+                  children: [
+                    const SizedBox(height: 80),
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: FloatingActionButton(
+                        onPressed: () {
+                          setState(() {
+                            _myPosition();
+                          });
+                        },
+                        backgroundColor: Colors.greenAccent,
+                        child: const Icon(Icons.location_searching_rounded),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: FloatingActionButton(
+                        onPressed: () {
+                          setState(() {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const newQuote()));
+                          });
+                        },
+                        backgroundColor: Colors.greenAccent,
+                        child: const Icon(Icons.add_a_photo_outlined),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: FloatingActionButton(
+                        onPressed: () {
+                          setState(() {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const quoteView()));
+                          });
+                        },
+                        backgroundColor: Colors.greenAccent,
+                        child: const Icon(Icons.supervised_user_circle_sharp),
+                      ),
+                    ),
+                  ],
+                )
+              ],
+            ),
           )
         ]));
   }

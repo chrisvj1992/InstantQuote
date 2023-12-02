@@ -17,27 +17,33 @@ class _LoginState extends State<Login> {
   bool _validatePass = false;
   bool _validateMail = false;
 
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.black54,
       body: Stack(
         children: [
           SingleChildScrollView(
-            padding: EdgeInsets.all(size.width * 0.05),
+            padding: EdgeInsets.all(size.width * 0.1),
             child: Column(
               children: [
+                const SizedBox(
+                  height: 80,
+                ),
                 Container(
-                  height: size.height * 0.3,
-                  width: size.width * 0.6,
+                  height: size.height * 0.25,
+                  width: size.width * 0.8,
                   decoration: const BoxDecoration(
                       image: DecorationImage(
-                          image: AssetImage('LogoOscuro.jpg'),
-                          fit: BoxFit.cover)),
+                          image: AssetImage('assets/LogoOscuro.jpg'),
+                          fit: BoxFit.cover),
+                    color: Colors.white
+                  ),
                 ),
                 const SizedBox(
-                  height: 15,
+                  height: 50,
                 ),
                 const Label(
                   texto: "correo:",
@@ -98,64 +104,69 @@ class _LoginState extends State<Login> {
                   },
                 ),
                 const SizedBox(
-                  height: 25,
+                  height: 35,
                 ),
                 ElevatedButton(
-                    onPressed: () async {
-                      _validatePass = pass.text.isEmpty ? true : false;
-                      _validateMail = email.text.isEmpty ? true : false;
+                  onPressed: () async {
+                    _validatePass = pass.text.isEmpty ? true : false;
+                    _validateMail = email.text.isEmpty ? true : false;
 
-                      if (!_validateMail && !_validatePass) {
-                        if (await autenticarUsuario(email.text, pass.text) ==
-                            true) {
-                          // ignore: use_build_context_synchronously
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const Home()));
-                        } else {
-                          // ignore: use_build_context_synchronously
-                          showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: const Text('Credenciales incorrectas'),
-                                  content: const Text(
-                                      'Hubo un error con las credenciales'),
-                                  actions: <Widget>[
-                                    TextButton(
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                        child: const Text('Aceptar'))
-                                  ],
-                                );
-                              });
-                        }
+                    if (!_validateMail && !_validatePass) {
+                      if (await autenticarUsuario(email.text, pass.text) == true) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const Home()),
+                        );
+                      } else {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text('Credenciales incorrectas'),
+                              content: const Text('Hubo un error con las credenciales'),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text('Aceptar'),
+                                )
+                              ],
+                            );
+                          },
+                        );
                       }
-                    },
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: cons.AzulPrimario,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(5)),
-                        fixedSize: Size(size.width * 0.45, 45)),
-                    child: const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.login,
-                          color: Colors.blueGrey,
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: cons.AzulPrimario,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    fixedSize: Size(size.width * 0.45, 45),
+                    // Agrega la propiedad boxShadow para el efecto de sombreado
+                    elevation: 20,
+                    shadowColor: Color.fromRGBO(158, 255, 212, 1.0),
+                  ),
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.login,
+                        color: Colors.blueGrey,
+                      ),
+                      const Text(
+                        '  Ingresar',
+                        style: TextStyle(
+                          color: Color.fromRGBO(158, 255, 212, 1.0),
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
                         ),
-                        Text(
-                          '  Ingresar',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold),
-                        )
-                        //Label(texto: "Ingresar")
-                      ],
-                    ))
+                      ),
+                    ],
+                  ),
+                )
+
               ],
             ),
           )
@@ -182,6 +193,7 @@ class Label extends StatelessWidget {
                 fontSize: 20,
                 fontWeight: FontWeight.w500),
           ),
+
         )
       ],
     );
