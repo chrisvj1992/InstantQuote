@@ -29,7 +29,7 @@ class _HomeState extends State<Home> {
 
   Future<void> initData() async {
     users = await getData();
-    List<Marker> markerss = await getCoords();
+    List<Marker> markerss = await getCoords(context);
     setState(() {
       markersGlobal = markerss.toSet();
     });
@@ -109,7 +109,7 @@ class _HomeState extends State<Home> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => const quoteView()));
+                                    builder: (context) => const newQuote()));
                           });
                         },
                         backgroundColor: Colors.greenAccent,

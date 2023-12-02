@@ -1,7 +1,10 @@
 // ignore_for_file: camel_case_types, file_names
+import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:instant_quote/utils/constantes.dart' as cons;
+import 'package:firebase_storage/firebase_storage.dart';
 
 class newQuote extends StatefulWidget {
   const newQuote({super.key});
@@ -10,7 +13,36 @@ class newQuote extends StatefulWidget {
   State<newQuote> createState() => _newQuoteState();
 }
 
+
+
 class _newQuoteState extends State<newQuote> {
+  PlatformFile? pickedFile;
+  UploadTask? uploadTask;
+
+  Future selectFile() async {
+    final result = await FilePicker.platform.pickFiles();
+    if(result == null) return;
+
+    setState(() {
+      pickedFile = result.files.first;
+    });
+    uploadFile();
+  }
+
+  Future uploadFile() async {
+    final path = 'files/${pickedFile!.name}';
+    final file = File(pickedFile!.path!);
+
+    final ref = FirebaseStorage.instance.ref().child(path);
+    uploadTask = ref.putFile(file);
+
+    final snapshot = await uploadTask!.whenComplete(() {});
+
+    final urlDownload = await snapshot.ref.getDownloadURL();
+    print('Download Link: ${urlDownload}');
+  }
+
+
   final quote = TextEditingController();
   final time = TextEditingController();
   final latitude = TextEditingController();
@@ -71,6 +103,7 @@ class _newQuoteState extends State<newQuote> {
                             onTap: () {
                               setState(() {
                                 mostrarLogoOscuro = !mostrarLogoOscuro;
+                                selectFile();
                               });
                             },
                             child: Expanded(
@@ -80,12 +113,16 @@ class _newQuoteState extends State<newQuote> {
                                 decoration: const BoxDecoration(
                                     color: Colors.white
                                 ),
-                                child: Image.asset(
-                                  mostrarLogoOscuro
-                                      ? 'assets/LogoOscuro.jpg'
-                                      : 'assets/LogoClaro.jpg',
-                                  fit: BoxFit.cover,
-                                ),
+                                child: 
+                                  Image.file(
+                                    File(pickedFile!.path!),
+                                  )
+                            //    Image.asset(
+                            //      mostrarLogoOscuro
+                              //        ? 'assets/LogoOscuro.jpg'
+                             //         : 'assets/LogoClaro.jpg',
+                            //      fit: BoxFit.cover,
+                           //     ),
                               ),
                             ),
                           )

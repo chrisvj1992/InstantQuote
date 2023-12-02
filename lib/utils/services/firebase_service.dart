@@ -1,6 +1,12 @@
+import 'dart:js';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:instant_quote/quoteView.dart';
 import 'package:instant_quote/utils/constantes.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 FirebaseFirestore db = FirebaseFirestore.instance;
 
@@ -14,15 +20,31 @@ Future<List> getData() async {
   return users;
 }
 
-Future<List<Marker>> getCoords() async {
+// obtener coordenadas
+
+Future<List<Marker>> getCoords(BuildContext context) async {
   List<Marker> coords = [];
   CollectionReference collectionReference = db.collection('coords');
   QuerySnapshot queryCoords = await collectionReference.get();
   for (var documento in queryCoords.docs) {
+    Reference imageReference =
+    FirebaseStorage.instance.ref().child(documento['img']);
     coords.add(Marker(
       markerId: MarkerId(documento['quote']),
-      position:
-          LatLng(documento['coords'].latitude, documento['coords'].longitude),
+      position: LatLng(
+          documento['coords'].latitude, documento['coords'].longitude),
+      onTap: (){
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => quoteView(
+                  quote: documento['quote'],
+                  imageReference: imageReference,
+
+                )
+            )
+        );
+      }
       // onTap: setState(() {
       //                 Navigator.push(
       //                     context,
@@ -30,14 +52,20 @@ Future<List<Marker>> getCoords() async {
       //                         builder: (context) => const quoteView()));
       //               });
     ));
+    print('aqui hay un documento : ${documento['img']}');
   }
   return coords;
 }
+
+
+//añadir usuario
 
 Future<void> addUser(String email, String pass) async {
   await db.collection("users").add({"email": email, "pass": pass});
 }
 
+
+// autenficar en el login
 Future<bool> autenticarUsuario(String email, String pass) async {
   try {
     QuerySnapshot querySnapshot =

@@ -3,9 +3,16 @@
 // ignore: unused_import, avoid_web_libraries_in_flutter
 
 import 'package:flutter/material.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class quoteView extends StatefulWidget {
-  const quoteView({super.key});
+  final String quote;
+  final Reference imageReference;
+  const  quoteView({
+    Key? key,
+    required this.quote,
+    required this.imageReference,
+}) : super(key: key);
 
   @override
   State<quoteView> createState() => _quoteViewState();
@@ -34,7 +41,8 @@ class _quoteViewState extends State<quoteView> {
           child: Container(
               margin: const EdgeInsets.only(top: 80),
               color: const Color.fromRGBO(252, 243, 207, 0.8),
-              child: const Text('hola, soy un quote')),
+              child: Text('Quote: ${widget.quote}'),
+          ),
         ),
       ),
       backgroundColor: Colors.black87,
