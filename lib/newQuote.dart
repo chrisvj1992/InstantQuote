@@ -4,10 +4,11 @@ import 'dart:io';
 
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/material.dart';
 import 'package:instant_quote/home.dart';
 import 'package:instant_quote/utils/constantes.dart' as cons;
 import 'package:file_picker/file_picker.dart';
+import 'package:instant_quote/utils/constantes.dart';
+import 'package:instant_quote/utils/services/firebase_service.dart';
 
 class newQuote extends StatefulWidget {
   const newQuote({super.key});
@@ -22,7 +23,7 @@ class _newQuoteState extends State<newQuote> {
 
   Future selectFile() async {
     final result = await FilePicker.platform.pickFiles();
-    if(result == null) return;
+    if (result == null) return;
 
     setState(() {
       pickedFile = result.files.first;
@@ -39,9 +40,9 @@ class _newQuoteState extends State<newQuote> {
     final snapshot = await uploadTask!.whenComplete(() {});
 
     final urlDownload = await snapshot.ref.getDownloadURL();
-    print('Link Descarga: $urlDownload');
+    addQuote(lati, longi, quote.text, path, idUser);
+    //print('Link Descarga: $urlDownload');
   }
-
 
   final quote = TextEditingController();
   final time = TextEditingController();
@@ -49,9 +50,6 @@ class _newQuoteState extends State<newQuote> {
   final longitud = TextEditingController();
 
   bool _validateQuote = false;
-  final bool _validateTime = false;
-  final bool _validateLatitude = false;
-  final bool _validateLongitud = false;
   bool setImage = false;
 
   bool mostrarLogoOscuro = true;
@@ -61,21 +59,16 @@ class _newQuoteState extends State<newQuote> {
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-        backgroundColor: Color.fromRGBO(33, 43, 49, 1.0),
-        appBar:
-        AppBar(
+        backgroundColor: const Color.fromRGBO(33, 43, 49, 1.0),
+        appBar: AppBar(
           backgroundColor: Colors.greenAccent,
           toolbarHeight: 80,
           title: const Text('nuevo Quote'),
-          titleTextStyle: TextStyle(
-              color: Colors.black45,
-              fontSize: 24,
-              fontWeight: FontWeight.bold
-          ),
-          iconTheme: IconThemeData(color: Colors.black45, size: 32.0),
+          titleTextStyle: const TextStyle(
+              color: Colors.black45, fontSize: 24, fontWeight: FontWeight.bold),
+          iconTheme: const IconThemeData(color: Colors.black45, size: 32.0),
         ),
-        body:
-        SingleChildScrollView(
+        body: SingleChildScrollView(
           child: Column(
             children: [
               const SizedBox(
@@ -83,8 +76,7 @@ class _newQuoteState extends State<newQuote> {
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
-                child:
-                Column(
+                child: Column(
                   children: [
                     const Label(
                       texto: "toca la Imagen:",
@@ -110,22 +102,18 @@ class _newQuoteState extends State<newQuote> {
                             child: Container(
                               height: size.height * 0.25,
                               width: size.width * 0.78,
-                              decoration: const BoxDecoration(
-                                  color: Colors.white
-                              ),
+                              decoration:
+                                  const BoxDecoration(color: Colors.white),
                               child: pickedFile != null
                                   ? Image.file(
                                       File(pickedFile!.path!),
                                       fit: BoxFit.cover,
                                     )
-                                  : Image.asset(
-                                       'assets/LogoOscuro.jpg',
-                                     fit: BoxFit.cover),
+                                  : Image.asset('assets/LogoOscuro.jpg',
+                                      fit: BoxFit.cover),
                             ),
                           ),
-                        )
-                        ,
-
+                        ),
                       ],
                     ),
                     const SizedBox(
@@ -137,48 +125,49 @@ class _newQuoteState extends State<newQuote> {
                         const Icon(
                           Icons.sticky_note_2_outlined,
                           color: Colors.white,
-
                         ),
                         const SizedBox(
                           width: 10,
                         ),
                         Expanded(
-                          child: Container(
-                            child: TextFormField(
-                              clipBehavior: Clip.hardEdge,
-                              maxLines: 6,
-                              maxLength: 120,
-                              controller: quote,
-                              obscureText: false,
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(3),
-                                    topRight: Radius.circular(3),
-                                    bottomLeft: Radius.circular(3),
-                                    bottomRight: Radius.circular(40), // Ajusta esta esquina para ocultarla
-                                  ),
-                                  borderSide: const BorderSide(
-                                    width: 1,
-                                    style: BorderStyle.none,
-                                  ),
+                          child: TextFormField(
+                            clipBehavior: Clip.hardEdge,
+                            maxLines: 6,
+                            maxLength: 120,
+                            controller: quote,
+                            obscureText: false,
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(
+                                borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(3),
+                                  topRight: Radius.circular(3),
+                                  bottomLeft: Radius.circular(3),
+                                  bottomRight: Radius.circular(
+                                      40), // Ajusta esta esquina para ocultarla
                                 ),
-                                hintText: '____________________________________________________________________________________________________________________________________________________',
-                                hintFadeDuration: Duration(hours: 2),
-                                filled: true,
-                                fillColor: Color.fromRGBO(221, 190, 146, 1.0),
-                                errorText: _validateQuote ? 'Debe escribir un Quote' : null,
-                                contentPadding: const EdgeInsets.all(10),
-
+                                borderSide: BorderSide(
+                                  width: 1,
+                                  style: BorderStyle.none,
+                                ),
                               ),
-                              onChanged: (dato) {
-                                setState(() {
-                                  if (dato.trim().isNotEmpty) {
-                                    _validateQuote = false;
-                                  }
-                                });
-                              },
+                              hintText:
+                                  '____________________________________________________________________________________________________________________________________________________',
+                              hintFadeDuration: const Duration(hours: 2),
+                              filled: true,
+                              fillColor:
+                                  const Color.fromRGBO(221, 190, 146, 1.0),
+                              errorText: _validateQuote
+                                  ? 'Debe escribir un Quote'
+                                  : null,
+                              contentPadding: const EdgeInsets.all(10),
                             ),
+                            onChanged: (dato) {
+                              setState(() {
+                                if (dato.trim().isNotEmpty) {
+                                  _validateQuote = false;
+                                }
+                              });
+                            },
                           ),
                         ),
                       ],
@@ -193,22 +182,35 @@ class _newQuoteState extends State<newQuote> {
                 onPressed: () => showDialog<String>(
                     context: context,
                     builder: (BuildContext context) => AlertDialog(
-                      title: const Text('Submit'),
-                      content: const Text('¿Deseas subir este Quote?'),
-                      actions: <Widget>[
-                        TextButton(
-                            onPressed: () => Navigator.pop(context, 'Cancelar'),
-                            child: const Text('Cancelar')),
-                        TextButton(
-                            onPressed: () => {
-                              uploadFile(),
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => const Home()),
-                              )},
-                            child: const Text('Ok'))
-                      ],
-                    )),
+                          title: const Text('Submit'),
+                          content: const Text('¿Deseas subir este Quote?'),
+                          actions: <Widget>[
+                            TextButton(
+                                onPressed: () =>
+                                    Navigator.pop(context, 'Cancelar'),
+                                child: const Text('Cancelar')),
+                            TextButton(
+                                onPressed: () => {
+                                      uploadFile(),
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => const Home()),
+                                      )
+                                    },
+                                child: const Text('Ok'))
+                          ],
+                        )),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: cons.AzulPrimario,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  fixedSize: Size(size.width * 0.45, 45),
+                  // Agrega la propiedad boxShadow para el efecto de sombreado
+                  elevation: 20,
+                  shadowColor: const Color.fromRGBO(158, 255, 212, 1.0),
+                ),
                 child: const Text(
                   'Submit',
                   style: TextStyle(
@@ -217,24 +219,12 @@ class _newQuoteState extends State<newQuote> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: cons.AzulPrimario,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                  fixedSize: Size( size.width * 0.45, 45),
-                  // Agrega la propiedad boxShadow para el efecto de sombreado
-                  elevation: 20,
-                  shadowColor: Color.fromRGBO(158, 255, 212, 1.0),
-                ),
               )
             ],
           ),
-        )
-    );
+        ));
   }
 }
-
 
 class Label extends StatelessWidget {
   final String texto;
@@ -253,7 +243,6 @@ class Label extends StatelessWidget {
                 fontSize: 20,
                 fontWeight: FontWeight.w500),
           ),
-
         )
       ],
     );

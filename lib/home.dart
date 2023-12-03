@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:instant_quote/newQuote.dart';
-import 'package:instant_quote/quoteView.dart';
 import 'package:instant_quote/utils/constantes.dart';
 import 'package:instant_quote/utils/services/firebase_service.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -29,7 +28,8 @@ class _HomeState extends State<Home> {
 
   Future<void> initData() async {
     users = await getData();
-    List<Marker> markerss = await getCoords();
+    // ignore: use_build_context_synchronously
+    List<Marker> markerss = await getCoords(context);
     setState(() {
       markersGlobal = markerss.toSet();
     });
@@ -43,31 +43,27 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
-        backgroundColor: Color.fromRGBO(33, 43, 49, 1.0),
+        backgroundColor: const Color.fromRGBO(33, 43, 49, 1.0),
         appBar: AppBar(
           backgroundColor: Colors.greenAccent,
           toolbarHeight: 80,
           title: const Text('Inicio'),
-          titleTextStyle: TextStyle(
-              color: Colors.black45,
-              fontSize: 24,
-              fontWeight: FontWeight.bold
-          ),
-          iconTheme: IconThemeData(color: Colors.black45, size: 32.0),
+          titleTextStyle: const TextStyle(
+              color: Colors.black45, fontSize: 24, fontWeight: FontWeight.bold),
+          iconTheme: const IconThemeData(color: Colors.black45, size: 32.0),
         ),
         body: Stack(children: [
-
           Container(
             padding: EdgeInsets.only(bottom: size.height * 0.1),
             width: size.width,
-            height: size.height ,
+            height: size.height,
             child: Stack(
               children: [
                 GoogleMap(
                   onMapCreated: _onMapCreated,
-                  initialCameraPosition: CameraPosition(target: _center, zoom: 17),
+                  initialCameraPosition:
+                      CameraPosition(target: _center, zoom: 17),
                   markers: markersGlobal,
-
                 ),
                 Column(
                   children: [
@@ -77,7 +73,7 @@ class _HomeState extends State<Home> {
                       child: FloatingActionButton(
                         onPressed: () {
                           setState(() {
-                            _myPosition();
+                            _myPosition(true);
                           });
                         },
                         backgroundColor: Colors.greenAccent,
@@ -89,6 +85,7 @@ class _HomeState extends State<Home> {
                       alignment: Alignment.bottomRight,
                       child: FloatingActionButton(
                         onPressed: () {
+                          _myPosition(false);
                           setState(() {
                             Navigator.push(
                                 context,
@@ -101,21 +98,6 @@ class _HomeState extends State<Home> {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    Align(
-                      alignment: Alignment.bottomRight,
-                      child: FloatingActionButton(
-                        onPressed: () {
-                          setState(() {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const newQuote()));
-                          });
-                        },
-                        backgroundColor: Colors.greenAccent,
-                        child: const Icon(Icons.supervised_user_circle_sharp),
-                      ),
-                    ),
                   ],
                 )
               ],
@@ -124,7 +106,7 @@ class _HomeState extends State<Home> {
         ]));
   }
 
-  Future<void> _myPosition() async {
+  Future<void> _myPosition(bool band) async {
     PermissionStatus permissionStatus = await Permission.location.request();
 
     if (permissionStatus.isGranted) {
@@ -139,8 +121,13 @@ class _HomeState extends State<Home> {
         print(long);
         print('-------');
 
-        mapController
-            .animateCamera(CameraUpdate.newLatLngZoom(LatLng(lat, long), 16));
+        if (band) {
+          mapController
+              .animateCamera(CameraUpdate.newLatLngZoom(LatLng(lat, long), 16));
+        } else {
+          lati = lat;
+          longi = long;
+        }
       } catch (e) {
         print('Error de ubicación: $e');
       }
