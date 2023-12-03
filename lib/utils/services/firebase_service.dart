@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:instant_quote/quoteView.dart';
 import 'package:instant_quote/utils/constantes.dart';
 
 FirebaseFirestore db = FirebaseFirestore.instance;
@@ -14,24 +16,51 @@ Future<List> getData() async {
   return users;
 }
 
-Future<List<Marker>> getCoords() async {
+Future getQuote(String id) async {
+  CollectionReference collectionReferenceQuote = db.collection('coords');
+  DocumentSnapshot<Object?> queryCoords =
+      await collectionReferenceQuote.doc(id).get();
+  // DocumentSnapshot document = await db.collection('tuColeccion').doc(id).get();
+  return queryCoords;
+}
+
+Future getQuoteUser(String id) async {
+  CollectionReference collectionReferenceUser = db.collection('users');
+  DocumentSnapshot<Object?> queryUser =
+      await collectionReferenceUser.doc(id).get();
+  return queryUser;
+}
+
+Future<List<Marker>> getCoords(BuildContext context) async {
   List<Marker> coords = [];
   CollectionReference collectionReference = db.collection('coords');
   QuerySnapshot queryCoords = await collectionReference.get();
   for (var documento in queryCoords.docs) {
     coords.add(Marker(
-      markerId: MarkerId(documento['quote']),
-      position:
-          LatLng(documento['coords'].latitude, documento['coords'].longitude),
-      // onTap: setState(() {
-      //                 Navigator.push(
-      //                     context,
-      //                     MaterialPageRoute(
-      //                         builder: (context) => const quoteView()));
-      //               });
-    ));
+        markerId: MarkerId(documento.id),
+        position:
+            LatLng(documento['coords'].latitude, documento['coords'].longitude),
+        onTap: () {
+          navigateToQuoteView(context, documento.id);
+        }));
   }
   return coords;
+}
+
+void navigateToQuoteView(BuildContext context, id) {
+  idQuote = id;
+  Navigator.push(
+    context,
+    MaterialPageRoute(builder: (context) => const quoteView()),
+  );
+}
+
+Future<void> addQuote(
+    double lat, double long, String quote, String imgPath, String id) async {
+  GeoPoint coords = GeoPoint(lat, long);
+  await db
+      .collection("coords")
+      .add({'coords': coords, 'id': id, 'img': imgPath, 'quote': quote});
 }
 
 Future<void> addUser(String email, String pass) async {
@@ -49,11 +78,11 @@ Future<bool> autenticarUsuario(String email, String pass) async {
           .replaceAll('{', '')
           .replaceAll('}', '')
           .split(', ');
-
-      var oriEmail = datos[1].split(': ');
+      var oriEmail = datos[3].split(': ');
       var oriPass = datos[0].split(': ');
       if (oriEmail[1] == email && oriPass[1] == pass) {
         isLogged = true;
+        idUser = querySnapshot.docs.first.id;
         return true;
       }
     }

@@ -10,3 +10,7 @@ const blanco = Color.fromARGB(255, 255, 255, 255);
 late var users;
 Set<Marker> markersGlobal = {};
 bool isLogged = false;
+double lati = 0;
+double longi = 0;
+String idUser = '';
+String idQuote = '';

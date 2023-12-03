@@ -17,7 +17,6 @@ class _LoginState extends State<Login> {
   bool _validatePass = false;
   bool _validateMail = false;
 
-
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -39,8 +38,7 @@ class _LoginState extends State<Login> {
                       image: DecorationImage(
                           image: AssetImage('assets/LogoOscuro.jpg'),
                           fit: BoxFit.cover),
-                    color: Colors.white
-                  ),
+                      color: Colors.white),
                 ),
                 const SizedBox(
                   height: 50,
@@ -112,18 +110,22 @@ class _LoginState extends State<Login> {
                     _validateMail = email.text.isEmpty ? true : false;
 
                     if (!_validateMail && !_validatePass) {
-                      if (await autenticarUsuario(email.text, pass.text) == true) {
+                      if (await autenticarUsuario(email.text, pass.text) ==
+                          true) {
+                        // ignore: use_build_context_synchronously
                         Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => const Home()),
                         );
                       } else {
+                        // ignore: use_build_context_synchronously
                         showDialog(
                           context: context,
                           builder: (BuildContext context) {
                             return AlertDialog(
                               title: const Text('Credenciales incorrectas'),
-                              content: const Text('Hubo un error con las credenciales'),
+                              content: const Text(
+                                  'Hubo un error con las credenciales'),
                               actions: <Widget>[
                                 TextButton(
                                   onPressed: () {
@@ -146,7 +148,7 @@ class _LoginState extends State<Login> {
                     fixedSize: Size(size.width * 0.45, 45),
                     // Agrega la propiedad boxShadow para el efecto de sombreado
                     elevation: 20,
-                    shadowColor: Color.fromRGBO(158, 255, 212, 1.0),
+                    shadowColor: const Color.fromRGBO(158, 255, 212, 1.0),
                   ),
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -155,7 +157,7 @@ class _LoginState extends State<Login> {
                         Icons.login,
                         color: Colors.blueGrey,
                       ),
-                      const Text(
+                      Text(
                         '  Ingresar',
                         style: TextStyle(
                           color: Color.fromRGBO(158, 255, 212, 1.0),
@@ -166,7 +168,6 @@ class _LoginState extends State<Login> {
                     ],
                   ),
                 )
-
               ],
             ),
           )
@@ -193,7 +194,6 @@ class Label extends StatelessWidget {
                 fontSize: 20,
                 fontWeight: FontWeight.w500),
           ),
-
         )
       ],
     );

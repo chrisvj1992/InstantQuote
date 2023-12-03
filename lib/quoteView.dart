@@ -3,6 +3,8 @@
 // ignore: unused_import, avoid_web_libraries_in_flutter
 
 import 'package:flutter/material.dart';
+import 'package:instant_quote/utils/constantes.dart';
+import 'package:instant_quote/utils/services/firebase_service.dart';
 
 class quoteView extends StatefulWidget {
   const quoteView({super.key});
@@ -13,12 +15,32 @@ class quoteView extends StatefulWidget {
 
 class _quoteViewState extends State<quoteView> {
   @override
+  void initState() {
+    super.initState();
+    initData();
+  }
+
+  Future<void> initData() async {
+    var quote = await getQuote(idQuote);
+    var quoteUser = await getQuoteUser(idUser);
+    Map<String, dynamic> data = quote.data() as Map<String, dynamic>;
+    Map<String, dynamic> dataUser = quoteUser.data() as Map<String, dynamic>;
+    print(data['quote']);
+    print(data['img']);
+    print(data['coords'].latitude);
+    print(data['coords'].longitude);
+    print(dataUser['name']);
+    print(dataUser['email']);
+    print('------------------');
+  }
+
+  @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('quote View'),
+        title: const Text('Quote'),
       ),
       body: Center(
         child: Container(
