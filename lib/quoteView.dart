@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:instant_quote/utils/constantes.dart';
 import 'package:instant_quote/utils/services/firebase_service.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:instant_quote/utils/services/firebase_service.dart';
 
 class quoteView extends StatefulWidget {
   const quoteView({super.key});
@@ -44,13 +43,13 @@ class _quoteViewState extends State<quoteView> {
     var quote = await getQuote(idQuote);
     var quoteUser = await getQuoteUser(quote['id']);
     Map<String, dynamic> data = quote.data() as Map<String, dynamic>;
-    Map<String, dynamic> dataUser = quoteUser.data() as Map<String, dynamic>;
-    print('ESTE ES EL QUOTE' + data['quote']);
-    print(data['img']);
-    print(data['coords'].latitude);
-    print(data['coords'].longitude);
-    print('NOMBRE DEL USUARIO '+ dataUser.toString());
-    print('------------------');
+    //Map<String, dynamic> dataUser = quoteUser.data() as Map<String, dynamic>;
+    //print('ESTE ES EL QUOTE' + data['quote']);
+    //print(data['img']);
+    //print(data['coords'].latitude);
+    //print(data['coords'].longitude);
+    //print('NOMBRE DEL USUARIO '+ dataUser.toString());
+    //print('------------------');
 
     downloadURL = data['img'];
     userName = quoteUser['name'];

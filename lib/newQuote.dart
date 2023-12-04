@@ -35,12 +35,7 @@ class _newQuoteState extends State<newQuote> {
 
     final ref = FirebaseStorage.instance.ref().child(path);
     uploadTask = ref.putFile(file);
-    final snapshot = await uploadTask!.whenComplete(() {});
-    final urlDownload = await snapshot.ref.getDownloadURL();
     addQuote(lati, longi, quote.text, path, idUser);
-    //print('Link Descarga: $urlDownload');
-
-    print("este es el FILE: $file");
   }
 
   final quote = TextEditingController();
