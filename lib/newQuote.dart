@@ -1,7 +1,6 @@
 // ignore_for_file: camel_case_types, file_names
 
 import 'dart:io';
-
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:instant_quote/home.dart';
@@ -36,12 +35,12 @@ class _newQuoteState extends State<newQuote> {
 
     final ref = FirebaseStorage.instance.ref().child(path);
     uploadTask = ref.putFile(file);
-
     final snapshot = await uploadTask!.whenComplete(() {});
-
     final urlDownload = await snapshot.ref.getDownloadURL();
     addQuote(lati, longi, quote.text, path, idUser);
     //print('Link Descarga: $urlDownload');
+
+    print("este es el FILE: $file");
   }
 
   final quote = TextEditingController();
@@ -50,16 +49,13 @@ class _newQuoteState extends State<newQuote> {
   final longitud = TextEditingController();
 
   bool _validateQuote = false;
-  bool setImage = false;
-
-  bool mostrarLogoOscuro = true;
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-        backgroundColor: const Color.fromRGBO(33, 43, 49, 1.0),
+        backgroundColor: bgDark,
         appBar: AppBar(
           backgroundColor: Colors.greenAccent,
           toolbarHeight: 80,
@@ -86,7 +82,7 @@ class _newQuoteState extends State<newQuote> {
                       children: [
                         const Icon(
                           Icons.image,
-                          color: Colors.white,
+                          color: bgLight,
                         ),
                         const SizedBox(
                           width: 10,
@@ -94,7 +90,6 @@ class _newQuoteState extends State<newQuote> {
                         GestureDetector(
                           onTap: () {
                             setState(() {
-                              mostrarLogoOscuro = !mostrarLogoOscuro;
                               selectFile();
                             });
                           },
@@ -147,7 +142,7 @@ class _newQuoteState extends State<newQuote> {
                                 ),
                                 borderSide: BorderSide(
                                   width: 1,
-                                  style: BorderStyle.none,
+                                  style: BorderStyle.solid,
                                 ),
                               ),
                               hintText:
@@ -192,7 +187,7 @@ class _newQuoteState extends State<newQuote> {
                             TextButton(
                                 onPressed: () => {
                                       uploadFile(),
-                                      Navigator.push(
+                                      Navigator.pushReplacement(
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) => const Home()),
