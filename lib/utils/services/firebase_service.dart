@@ -13,7 +13,6 @@ Future<List> getData() async {
   for (var documento in queryPeople.docs) {
     users.add(documento.data());
   }
-
   return users;
 }
 
